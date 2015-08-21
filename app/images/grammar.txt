@@ -1,0 +1,63 @@
+{
+  labels = {};
+  vars = {};
+}
+
+start
+  = c:commands { return { "labels": labels, "vars": vars, "commands": c }; }
+
+commands
+  = c:command rest:("\n"+ d:command { return d; })+ "\n"* { return [c].concat(rest); }
+  / c:command "\n"* { return [vars, c]; }
+
+s
+  = " "*
+
+command
+  = l:label s ":" s c:unlabelled_command { labels[l] = line()-1; return c; }
+  / unlabelled_command
+
+unlabelled_command
+  = c:unlabelled_unchained_command s "->" s chain:label { c["chain"] = chain; return c; }
+  / unlabelled_unchained_command
+
+unlabelled_unchained_command
+  = "START" { return { "command": "START", "title":"Start" }; }
+  / "END" { return { "command": "END", "title":"End" }; }
+  / "INPUT" s v:variable { return { "command": "INPUT", "title": "INPUT " + v["title"], "code": v["code"] + "=tracetable_input(\"" + v["title"] + "\")" }; }
+  / "OUTPUT" s e:expression { return { "command": "OUTPUT", "title": "OUTPUT " + e["title"], "code": "tracetable_output(" + e["code"] + ")" }; }
+  / "JUMPIF" s c:condition s "?" s then:label { return { "command": "JUMPIF", "title": c["title"] + "?", "condition": c["code"], "then": then }; }
+  / "ASSIGN" s v:variable s "=" s e:expression { return { "command": "ASSIGN", "title": v["title"] + " = " + e["title"], "code": v["code"] + "=" + e["code"], "var": v["title"] }; }
+
+condition
+  = l:expression s "=" s r:expression { return { "title": l["title"] + " = " + r["title"], "code": "(" + l["code"] + ")==(" + r["code"] + ")" }; }
+  / l:expression s "<" s r:expression { return { "title": l["title"] + " < " + r["title"], "code": "(" + l["code"] + ")<(" + r["code"] + ")" }; }
+  / l:expression s ">" s r:expression { return { "title": l["title"] + " > " + r["title"], "code": "(" + l["code"] + ")>(" + r["code"] + ")" }; }
+
+expression
+  = additive
+
+additive
+  = l:multiplicative s op:[+-] s r:additive { return { "title": l["title"] + " " + op + " " + r["title"], "code": l["code"] + op + r["code"] }; }
+  / multiplicative
+
+multiplicative
+  = left:primary s op:[*/] s right:multiplicative { return { "title": l["title"] + " " + op + " " + r["title"], "code": l["code"] + op + r["code"] }; }
+  / primary
+
+primary
+  = integer
+  / "(" s additive:additive s ")" { return { "title": "(" + additive["title"] + ")", "code": "(" + additive["code"] + ")" }; }
+  / variable
+
+integer "integer"
+  = digits:[0-9]+ { return { "title": digits.join(""), "code": digits.join("") }; }
+
+label
+  = i:identifier { return "label_" + i; }
+
+variable
+  = v:identifier { vars[v] = true; return { "title": v, "code":"tracetable_scope[\"" + v + "\"]" }; }
+
+identifier
+  = letters:[a-zA-Z]+ { return letters.join(""); }

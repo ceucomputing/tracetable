@@ -29,6 +29,35 @@
     <![endif]-->
 
     <div class="container">
+
+      <nav class="navbar navbar-inverse">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">
+            Tracetable Simulator
+          </a>
+        </div>
+      </nav>
+
+      <div class="row">
+
+        <div class="col-md-3 text-center">
+          <div id="mermaid-holder">
+            <div class="mermaid">
+              graph TD;
+                A(this)-->B;
+                A-->C;
+                B-->D;
+                C-->D;
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-9">
+        </div>
+
+      </div>
+
+
       <div class="header">
         <ul class="nav nav-pills pull-right">
           <li class="active"><a href="#">Home</a></li>
@@ -59,12 +88,7 @@
           <p>Modernizr is an open-source JavaScript library that helps you build the next generation of HTML5 and CSS3-powered websites.</p>
         </div>
         <div class="col-lg-6">
-          <div class="mermaid">
-            graph TB
-              id1(Start)-->id2(Stop)
-              id1-->id3
-              id1-->id4
-          </div>
+
         </div>
       </div>
 
@@ -98,6 +122,7 @@
     <!-- endbuild -->
 
     <!-- build:js scripts/main.js -->
+    <script src="scripts/parser.js"></script>
     <script src="scripts/main.js"></script>
     <!-- endbuild -->
 
