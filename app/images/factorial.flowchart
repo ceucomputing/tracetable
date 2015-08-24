@@ -1,0 +1,10 @@
+START
+INPUT X
+JUMPIF X < 1? error -> else
+error: OUTPUT X -> end
+else: ASSIGN Y = 1
+loop: ASSIGN Y = Y * X
+ASSIGN X = X - 1
+JUMPIF X = 0? output -> loop
+output: OUTPUT Y
+end: END

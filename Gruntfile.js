@@ -54,6 +54,10 @@ module.exports = function (grunt) {
       styles: {
         files: ['<%= config.app %>/styles/{,*/}*.css'],
         tasks: ['newer:copy:styles', 'postcss']
+      },
+      peg: {
+      files: ['<%= config.app %>/images/{,*/}*.peg'],
+        tasks: ['build']
       }
     },
 
@@ -371,6 +375,14 @@ module.exports = function (grunt) {
       }
     },
 
+    peg: {
+      dist: {
+        src: "<%= config.app %>/images/flowchart.peg",
+        dest: "<%= config.app %>/scripts/flowchart.js",
+        options: { exportVar: "window.flowchart" }
+      }
+    },
+
     // Run some tasks in parallel to speed up build process
     concurrent: {
       server: [
@@ -428,6 +440,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
+    'peg',
     'wiredep',
     'useminPrepare',
     'concurrent:dist',

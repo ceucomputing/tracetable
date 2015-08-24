@@ -1,6 +1,6 @@
 {
-  labels = {};
-  vars = {};
+  var labels = {};
+  var vars = {};
 }
 
 start
@@ -42,7 +42,7 @@ additive
   / multiplicative
 
 multiplicative
-  = left:primary s op:[*/] s right:multiplicative { return { "title": l["title"] + " " + op + " " + r["title"], "code": l["code"] + op + r["code"] }; }
+  = l:primary s op:[*/] s r:multiplicative { return { "title": l["title"] + " " + op + " " + r["title"], "code": l["code"] + op + r["code"] }; }
   / primary
 
 primary
