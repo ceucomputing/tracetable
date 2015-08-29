@@ -38,9 +38,16 @@
         </div>
       </nav>
 
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#brickTab" aria-controls="brickTab" role="tab" data-toggle="tab">Simple</a></li>
+        <li role="presentation"><a href="#concreteTab" aria-controls="concreteTab" role="tab" data-toggle="tab">Factorial</a></li>
+        <li role="presentation"><a href="#waterTab" aria-controls="waterTab" role="tab" data-toggle="tab">GCD</a></li>
+      </ul>
+
       <div class="row">
 
-        <div class="col-md-3 text-center">
+        <div class="col-md-5">
           <div id="mermaid-holder">
             <div class="mermaid">
               graph TD;
@@ -52,7 +59,29 @@
           </div>
         </div>
 
-        <div class="col-md-9">
+        <div class="col-md-7">
+          <h2>Simulation Controls</h2>
+
+          <button id="next" type="button" class="btn btn-default btn-lg">
+            <span class="glyphicon glyphicon-forward" aria-hidden="true"></span> Next Step
+          </button>
+
+          <button id="reset" type="button" class="btn btn-danger btn-lg">
+            <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span> Reset
+          </button>
+
+          <h2>Trace Table</h2>
+
+          <p><table id="tracetable" class="table table-bordered text-center">
+            <thead>
+              <tr>
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="9">No results recorded yet.</td></tr>
+            </tbody>
+          </table></p>
         </div>
 
       </div>

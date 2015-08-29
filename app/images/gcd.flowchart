@@ -1,0 +1,12 @@
+START
+INPUT A
+INPUT B
+JUMPIF A < 1? error
+JUMPIF B < 1? error -> else
+error: OUTPUT A -> end
+else: JUMPIF A = B? output
+JUMPIF A > B? then
+ASSIGN B = B - A -> else
+then: ASSIGN A = A - B -> else
+output: OUTPUT A
+end: END

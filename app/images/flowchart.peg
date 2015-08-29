@@ -1,10 +1,11 @@
 {
   var labels = {};
   var vars = {};
+  var vars_list = [];
 }
 
 start
-  = c:commands { return { "labels": labels, "vars": vars, "commands": c }; }
+  = c:commands { return { "labels": labels, "vars": vars, "vars_list": vars_list, "commands": c }; }
 
 commands
   = c:command rest:("\n"+ d:command { return d; })+ "\n"* { return [c].concat(rest); }
@@ -24,7 +25,7 @@ unlabelled_command
 unlabelled_unchained_command
   = "START" { return { "command": "START", "title":"Start" }; }
   / "END" { return { "command": "END", "title":"End" }; }
-  / "INPUT" s v:variable { return { "command": "INPUT", "title": "INPUT " + v["title"], "code": v["code"] + "=tracetable_input(\"" + v["title"] + "\")" }; }
+  / "INPUT" s v:variable { return { "command": "INPUT", "title": "INPUT " + v["title"], "code": v["code"] + "=tracetable_input(\"" + v["title"] + "\")", "var": v["title"] }; }
   / "OUTPUT" s e:expression { return { "command": "OUTPUT", "title": "OUTPUT " + e["title"], "code": "tracetable_output(" + e["code"] + ")" }; }
   / "JUMPIF" s c:condition s "?" s then:label { return { "command": "JUMPIF", "title": c["title"] + "?", "condition": c["code"], "then": then }; }
   / "ASSIGN" s v:variable s "=" s e:expression { return { "command": "ASSIGN", "title": v["title"] + " = " + e["title"], "code": v["code"] + "=" + e["code"], "var": v["title"] }; }
@@ -57,7 +58,7 @@ label
   = i:identifier { return "label_" + i; }
 
 variable
-  = v:identifier { vars[v] = true; return { "title": v, "code":"tracetable_scope[\"" + v + "\"]" }; }
+  = v:identifier { if (!(v in vars)) { vars[v] = vars_list.length; vars_list.push(v); } return { "title": v, "code":"tracetable_scope[\"" + v + "\"]" }; }
 
 identifier
   = letters:[a-zA-Z]+ { return letters.join(""); }

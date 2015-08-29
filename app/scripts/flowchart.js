@@ -32,7 +32,7 @@ window.flowchart = (function() {
         peg$startRuleFunctions = { start: peg$parsestart },
         peg$startRuleFunction  = peg$parsestart,
 
-        peg$c0 = function(c) { return { "labels": labels, "vars": vars, "commands": c }; },
+        peg$c0 = function(c) { return { "labels": labels, "vars": vars, "vars_list": vars_list, "commands": c }; },
         peg$c1 = peg$FAILED,
         peg$c2 = [],
         peg$c3 = "\n",
@@ -56,7 +56,7 @@ window.flowchart = (function() {
         peg$c21 = function() { return { "command": "END", "title":"End" }; },
         peg$c22 = "INPUT",
         peg$c23 = { type: "literal", value: "INPUT", description: "\"INPUT\"" },
-        peg$c24 = function(v) { return { "command": "INPUT", "title": "INPUT " + v["title"], "code": v["code"] + "=tracetable_input(\"" + v["title"] + "\")" }; },
+        peg$c24 = function(v) { return { "command": "INPUT", "title": "INPUT " + v["title"], "code": v["code"] + "=tracetable_input(\"" + v["title"] + "\")", "var": v["title"] }; },
         peg$c25 = "OUTPUT",
         peg$c26 = { type: "literal", value: "OUTPUT", description: "\"OUTPUT\"" },
         peg$c27 = function(e) { return { "command": "OUTPUT", "title": "OUTPUT " + e["title"], "code": "tracetable_output(" + e["code"] + ")" }; },
@@ -92,7 +92,7 @@ window.flowchart = (function() {
         peg$c57 = { type: "class", value: "[0-9]", description: "[0-9]" },
         peg$c58 = function(digits) { return { "title": digits.join(""), "code": digits.join("") }; },
         peg$c59 = function(i) { return "label_" + i; },
-        peg$c60 = function(v) { vars[v] = true; return { "title": v, "code":"tracetable_scope[\"" + v + "\"]" }; },
+        peg$c60 = function(v) { if (!(v in vars)) { vars[v] = vars_list.length; vars_list.push(v); } return { "title": v, "code":"tracetable_scope[\"" + v + "\"]" }; },
         peg$c61 = /^[a-zA-Z]/,
         peg$c62 = { type: "class", value: "[a-zA-Z]", description: "[a-zA-Z]" },
         peg$c63 = function(letters) { return letters.join(""); },
@@ -1176,6 +1176,7 @@ window.flowchart = (function() {
 
       var labels = {};
       var vars = {};
+      var vars_list = [];
 
 
     peg$result = peg$startRuleFunction();

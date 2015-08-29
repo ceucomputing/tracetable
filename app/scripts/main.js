@@ -3,6 +3,7 @@
 $(function() {
 
   var tracetable_scope = {};
+  var tracetable_items = [];
 
   // Renders the given flowchart with the command at index current highlighted.
   // If current is null, flowchart is not being simulated and no command will be highlighted.
@@ -13,6 +14,22 @@ $(function() {
       holder.empty();
       $("<div>").addClass("mermaid").text(markup).appendTo(holder);
       mermaid.init();
+    }
+
+    function renderTracetable() {
+      var html = "";
+      if (tracetable_items.length == 0) {
+        html += "<tr><td colspan=\"" + (flowchart["vars_list"].length+1) + "\">No items to display</td></tr>"
+      } else {
+        for (var i = 0; i < tracetable_items.length; i++) {
+          html += "<tr>";
+            for (var j = 0; j < tracetable_items[i].length; j++) {
+              html += "<td>" + tracetable_items[i][j] + "</td>";
+            }
+          html += "</tr>";
+        }
+      }
+      $('#tracetable > tbody').html(html);
     }
 
     var labels = flowchart["labels"];
@@ -55,7 +72,13 @@ $(function() {
       }
     }
 
+    if (current != null) {
+      markup += "style node_" + current + " fill:#f9f,stroke:#333,stroke-width:4px\n";
+    }
+
     refreshFlowchart(markup);
+
+    renderTracetable();
 
   }
 
@@ -66,19 +89,34 @@ $(function() {
 
     var labels = flowchart["labels"];
     var vars = flowchart["vars"];
+    var vars_list = flowchart["vars_list"];
     var commands = flowchart["commands"];
     var command = commands[current];
 
     function tracetable_input(name) {
-      return 5;
+      var input = NaN;
+      while (isNaN(input)) {
+        input = parseInt(prompt("Enter an integer value for " + name + ":"));
+      }
+      return input;
     }
 
     function tracetable_output(value) {
-      console.log(value);
+      var newItem = [];
+      for (var i = 0; i < vars_list.length; i++) {
+        newItem[i] = "";
+      }
+      newItem[vars_list.length] = value;
+      tracetable_items.push(newItem);
     }
 
-    function updateTraceTable(varname, value) {
-
+    function updateTracetable(varname) {
+      var newItem = [];
+      var varIndex = vars[varname];
+      for (var i = 0; i < vars_list.length+1; i++) {
+        newItem[i] = (varIndex == i) ? tracetable_scope[varname] : "";
+      }
+      tracetable_items.push(newItem);
     }
 
     var chain = (current < commands.length-1) ? (current+1) : null;
@@ -93,6 +131,9 @@ $(function() {
         break;
       case "INPUT":
       case "ASSIGN":
+        eval(command["code"]);
+        updateTracetable(command["var"]);
+        break;
       case "OUTPUT":
         eval(command["code"]);
         break;
@@ -102,13 +143,45 @@ $(function() {
 
   }
 
-  $.get("../images/factorial.flowchart", function(data) {
+  $.get("../images/gcd.flowchart", function(data) {
     var flowchart = window.flowchart.parse(data);
-    var current = 0;
-    while (current != null) {
-      render(flowchart, current);
-      current = execute(flowchart, current);
+
+    function resetTracetable() {
+      var vars_list = flowchart["vars_list"];
+      var html = "<tr>";
+      for (var i = 0; i < vars_list.length; i++) {
+        html += "<th>" + vars_list[i] + "</th>";
+      }
+      html += "<th>Output</th></tr>";
+      $('#tracetable > thead').html(html);
+      tracetable_items = [];
     }
+
+    var current = 0;
+    var next = null;
+
+    function reset() {
+      resetTracetable();
+      current = 0;
+      next = execute(flowchart, current);
+      render(flowchart, current);
+      $("#next").prop("disabled", next == null);
+    }
+
+    reset();
+
+    $("#next").on("click", function() {
+      if (next != null) {
+        current = next;
+        next = execute(flowchart, current);
+        render(flowchart, current);
+        $("#next").prop("disabled", next == null);
+      }
+    });
+
+    $("#reset").on("click", function() {
+      reset();
+    });
   });
 
 });
