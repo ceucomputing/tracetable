@@ -2,14 +2,17 @@
 
 $(function() {
 
-  var tracetable_scope = {};
-  var tracetable_items = [];
+  var tracetableScope = {};
+  var tracetableItems = [];
 
   // Renders the given flowchart with the command at index current highlighted.
   // If current is null, flowchart is not being simulated and no command will be highlighted.
   function render(flowchart, current) {
+    var labels = flowchart["labels"];
+    var vars = flowchart["vars"];
+    var commands = flowchart["commands"];
 
-    function refreshFlowchart(markup) {
+    function renderFlowchart(markup) {
       var holder = $("#mermaid-holder");
       holder.empty();
       $("<div>").addClass("mermaid").text(markup).appendTo(holder);
@@ -18,23 +21,19 @@ $(function() {
 
     function renderTracetable() {
       var html = "";
-      if (tracetable_items.length == 0) {
-        html += "<tr><td colspan=\"" + (flowchart["vars_list"].length+1) + "\">No items to display</td></tr>"
+      if (tracetableItems.length == 0) {
+        html += "<tr><td colspan=\"" + (flowchart["varsList"].length+1) + "\">No items to display</td></tr>"
       } else {
-        for (var i = 0; i < tracetable_items.length; i++) {
+        for (var i = 0; i < tracetableItems.length; i++) {
           html += "<tr>";
-            for (var j = 0; j < tracetable_items[i].length; j++) {
-              html += "<td>" + tracetable_items[i][j] + "</td>";
+            for (var j = 0; j < tracetableItems[i].length; j++) {
+              html += "<td>" + tracetableItems[i][j] + "</td>";
             }
           html += "</tr>";
         }
       }
       $('#tracetable > tbody').html(html);
     }
-
-    var labels = flowchart["labels"];
-    var vars = flowchart["vars"];
-    var commands = flowchart["commands"];
 
     var markup = "graph TD;\n";
 
@@ -76,112 +75,135 @@ $(function() {
       markup += "style node_" + current + " fill:#f9f,stroke:#333,stroke-width:4px\n";
     }
 
-    refreshFlowchart(markup);
-
+    renderFlowchart(markup);
     renderTracetable();
-
   }
 
   // Executes the command at index current and updates the trace table if needed.
   // Returns the index of the next command or null if the flowchart simulation should end.
   // The value of current must not be null.
-  function execute(flowchart, current) {
-
+  function execute(flowchart, current, callback) {
     var labels = flowchart["labels"];
     var vars = flowchart["vars"];
-    var vars_list = flowchart["vars_list"];
+    var varsList = flowchart["varsList"];
     var commands = flowchart["commands"];
     var command = commands[current];
-
-    function tracetable_input(name) {
-      var input = NaN;
-      while (isNaN(input)) {
-        input = parseInt(prompt("Enter an integer value for " + name + ":"));
-      }
-      return input;
-    }
-
-    function tracetable_output(value) {
-      var newItem = [];
-      for (var i = 0; i < vars_list.length; i++) {
-        newItem[i] = "";
-      }
-      newItem[vars_list.length] = value;
-      tracetable_items.push(newItem);
-    }
-
-    function updateTracetable(varname) {
-      var newItem = [];
-      var varIndex = vars[varname];
-      for (var i = 0; i < vars_list.length+1; i++) {
-        newItem[i] = (varIndex == i) ? tracetable_scope[varname] : "";
-      }
-      tracetable_items.push(newItem);
-    }
 
     var chain = (current < commands.length-1) ? (current+1) : null;
     if (command["chain"]) {
       chain = labels[command["chain"]];
     }
 
+    function tracetableInput(name) {
+      function promptCallback(result) {
+        if (result == null) {
+          callback(current, current);
+        } else {
+          var resultValue = parseInt(result);
+          if (isNaN(resultValue)) {
+            bootbox.prompt("Enter an integer value for " + name + ":", promptCallback);
+          } else {
+            tracetableScope[name] = resultValue;
+            updateTracetable(name);
+            callback(current, chain);
+          }
+        }
+      }
+      promptCallback(NaN);
+    }
+
+    function tracetableOutput(value) {
+      var newItem = [];
+      for (var i = 0; i < varsList.length; i++) {
+        newItem[i] = "";
+      }
+      newItem[varsList.length] = value;
+      tracetableItems.push(newItem);
+    }
+
+    function updateTracetable(name) {
+      var newItem = [];
+      var varIndex = vars[name];
+      for (var i = 0; i < varsList.length+1; i++) {
+        newItem[i] = (varIndex == i) ? tracetableScope[name] : "";
+      }
+      tracetableItems.push(newItem);
+    }
+
     switch (command["command"]) {
       case "JUMPIF":
         var condition = eval(command["condition"]);
         if (condition) chain = labels[command["then"]];
+        callback(current, chain);
         break;
       case "INPUT":
+        // Treat specially due to async events
+        // tracetableInput is responsible for calling callback
+        tracetableInput(command["var"]);
+        break;
       case "ASSIGN":
         eval(command["code"]);
         updateTracetable(command["var"]);
+        callback(current, chain);
         break;
       case "OUTPUT":
         eval(command["code"]);
+        callback(current, chain);
         break;
+      default:
+        callback(current, chain);
     }
-
-    return chain;
-
   }
 
   $.get("../images/gcd.flowchart", function(data) {
     var flowchart = window.flowchart.parse(data);
+    var varsList = flowchart["varsList"];
+    var current = 0;
+    var next = null;
 
     function resetTracetable() {
-      var vars_list = flowchart["vars_list"];
       var html = "<tr>";
-      for (var i = 0; i < vars_list.length; i++) {
-        html += "<th>" + vars_list[i] + "</th>";
+      for (var i = 0; i < varsList.length; i++) {
+        html += "<th>" + varsList[i] + "</th>";
       }
       html += "<th>Output</th></tr>";
       $('#tracetable > thead').html(html);
-      tracetable_items = [];
+      tracetableItems = [];
     }
-
-    var current = 0;
-    var next = null;
 
     function reset() {
       resetTracetable();
       current = 0;
-      next = execute(flowchart, current);
-      render(flowchart, current);
-      $("#next").prop("disabled", next == null);
+      execute(flowchart, current, function(newCurrent, newNext) {
+        current = newCurrent;
+        next = newNext;
+        render(flowchart, current);
+        $("#next").prop("disabled", next == null);
+      });
     }
-
-    reset();
 
     $("#next").on("click", function() {
       if (next != null) {
-        current = next;
-        next = execute(flowchart, current);
-        render(flowchart, current);
-        $("#next").prop("disabled", next == null);
+        $("#next").prop("disabled", true);
+        $("#reset").prop("disabled", true);
+        // Render both before and after execution.
+        render(flowchart, next);
+        execute(flowchart, next, function(newCurrent, newNext) {
+          current = newCurrent;
+          next = newNext;
+          // Render both before and after execution.
+          render(flowchart, current);
+          $("#next").prop("disabled", next == null);
+          $("#reset").prop("disabled", false);
+        });
       }
     });
 
     $("#reset").on("click", function() {
       reset();
     });
+
+    reset();
   });
 
 });

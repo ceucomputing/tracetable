@@ -32,7 +32,7 @@ window.flowchart = (function() {
         peg$startRuleFunctions = { start: peg$parsestart },
         peg$startRuleFunction  = peg$parsestart,
 
-        peg$c0 = function(c) { return { "labels": labels, "vars": vars, "vars_list": vars_list, "commands": c }; },
+        peg$c0 = function(c) { return { "labels": labels, "vars": vars, "varsList": varsList, "commands": c }; },
         peg$c1 = peg$FAILED,
         peg$c2 = [],
         peg$c3 = "\n",
@@ -56,10 +56,10 @@ window.flowchart = (function() {
         peg$c21 = function() { return { "command": "END", "title":"End" }; },
         peg$c22 = "INPUT",
         peg$c23 = { type: "literal", value: "INPUT", description: "\"INPUT\"" },
-        peg$c24 = function(v) { return { "command": "INPUT", "title": "INPUT " + v["title"], "code": v["code"] + "=tracetable_input(\"" + v["title"] + "\")", "var": v["title"] }; },
+        peg$c24 = function(v) { return { "command": "INPUT", "title": "INPUT " + v["title"], "code": v["code"] + "=tracetableInput(\"" + v["title"] + "\")", "var": v["title"] }; },
         peg$c25 = "OUTPUT",
         peg$c26 = { type: "literal", value: "OUTPUT", description: "\"OUTPUT\"" },
-        peg$c27 = function(e) { return { "command": "OUTPUT", "title": "OUTPUT " + e["title"], "code": "tracetable_output(" + e["code"] + ")" }; },
+        peg$c27 = function(e) { return { "command": "OUTPUT", "title": "OUTPUT " + e["title"], "code": "tracetableOutput(" + e["code"] + ")" }; },
         peg$c28 = "JUMPIF",
         peg$c29 = { type: "literal", value: "JUMPIF", description: "\"JUMPIF\"" },
         peg$c30 = "?",
@@ -92,10 +92,15 @@ window.flowchart = (function() {
         peg$c57 = { type: "class", value: "[0-9]", description: "[0-9]" },
         peg$c58 = function(digits) { return { "title": digits.join(""), "code": digits.join("") }; },
         peg$c59 = function(i) { return "label_" + i; },
-        peg$c60 = function(v) { if (!(v in vars)) { vars[v] = vars_list.length; vars_list.push(v); } return { "title": v, "code":"tracetable_scope[\"" + v + "\"]" }; },
-        peg$c61 = /^[a-zA-Z]/,
-        peg$c62 = { type: "class", value: "[a-zA-Z]", description: "[a-zA-Z]" },
-        peg$c63 = function(letters) { return letters.join(""); },
+        peg$c60 = function(v) { if (!(v in vars)) { vars[v] = varsList.length; varsList.push(v); } return { "title": v, "code": "tracetableScope[\"" + v + "\"]" }; },
+        peg$c61 = "\"",
+        peg$c62 = { type: "literal", value: "\"", description: "\"\\\"\"" },
+        peg$c63 = /^[a-zA-Z0-9 ]/,
+        peg$c64 = { type: "class", value: "[a-zA-Z0-9 ]", description: "[a-zA-Z0-9 ]" },
+        peg$c65 = function(s) { return { "title": "'" + s.join("") + "'", "code": "\"" + s.join("") + "\"" }; },
+        peg$c66 = /^[a-zA-Z]/,
+        peg$c67 = { type: "class", value: "[a-zA-Z]", description: "[a-zA-Z]" },
+        peg$c68 = function(letters) { return letters.join(""); },
 
         peg$currPos          = 0,
         peg$reportedPos      = 0,
@@ -482,7 +487,7 @@ window.flowchart = (function() {
           if (s3 !== peg$FAILED) {
             s4 = peg$parses();
             if (s4 !== peg$FAILED) {
-              s5 = peg$parseunlabelled_command();
+              s5 = peg$parseunlabelledCommand();
               if (s5 !== peg$FAILED) {
                 peg$reportedPos = s0;
                 s1 = peg$c12(s1, s5);
@@ -508,17 +513,17 @@ window.flowchart = (function() {
         s0 = peg$c1;
       }
       if (s0 === peg$FAILED) {
-        s0 = peg$parseunlabelled_command();
+        s0 = peg$parseunlabelledCommand();
       }
 
       return s0;
     }
 
-    function peg$parseunlabelled_command() {
+    function peg$parseunlabelledCommand() {
       var s0, s1, s2, s3, s4, s5;
 
       s0 = peg$currPos;
-      s1 = peg$parseunlabelled_unchained_command();
+      s1 = peg$parseunlabelledUnchainedCommand();
       if (s1 !== peg$FAILED) {
         s2 = peg$parses();
         if (s2 !== peg$FAILED) {
@@ -558,13 +563,13 @@ window.flowchart = (function() {
         s0 = peg$c1;
       }
       if (s0 === peg$FAILED) {
-        s0 = peg$parseunlabelled_unchained_command();
+        s0 = peg$parseunlabelledUnchainedCommand();
       }
 
       return s0;
     }
 
-    function peg$parseunlabelled_unchained_command() {
+    function peg$parseunlabelledUnchainedCommand() {
       var s0, s1, s2, s3, s4, s5, s6, s7;
 
       s0 = peg$currPos;
@@ -635,7 +640,7 @@ window.flowchart = (function() {
             if (s1 !== peg$FAILED) {
               s2 = peg$parses();
               if (s2 !== peg$FAILED) {
-                s3 = peg$parseadditive();
+                s3 = peg$parseexpression();
                 if (s3 !== peg$FAILED) {
                   peg$reportedPos = s0;
                   s1 = peg$c27(s3);
@@ -737,7 +742,7 @@ window.flowchart = (function() {
                         if (s5 !== peg$FAILED) {
                           s6 = peg$parses();
                           if (s6 !== peg$FAILED) {
-                            s7 = peg$parseadditive();
+                            s7 = peg$parseexpression();
                             if (s7 !== peg$FAILED) {
                               peg$reportedPos = s0;
                               s1 = peg$c37(s3, s7);
@@ -783,7 +788,7 @@ window.flowchart = (function() {
       var s0, s1, s2, s3, s4, s5;
 
       s0 = peg$currPos;
-      s1 = peg$parseadditive();
+      s1 = peg$parseexpression();
       if (s1 !== peg$FAILED) {
         s2 = peg$parses();
         if (s2 !== peg$FAILED) {
@@ -797,7 +802,7 @@ window.flowchart = (function() {
           if (s3 !== peg$FAILED) {
             s4 = peg$parses();
             if (s4 !== peg$FAILED) {
-              s5 = peg$parseadditive();
+              s5 = peg$parseexpression();
               if (s5 !== peg$FAILED) {
                 peg$reportedPos = s0;
                 s1 = peg$c38(s1, s5);
@@ -824,7 +829,7 @@ window.flowchart = (function() {
       }
       if (s0 === peg$FAILED) {
         s0 = peg$currPos;
-        s1 = peg$parseadditive();
+        s1 = peg$parseexpression();
         if (s1 !== peg$FAILED) {
           s2 = peg$parses();
           if (s2 !== peg$FAILED) {
@@ -838,7 +843,7 @@ window.flowchart = (function() {
             if (s3 !== peg$FAILED) {
               s4 = peg$parses();
               if (s4 !== peg$FAILED) {
-                s5 = peg$parseadditive();
+                s5 = peg$parseexpression();
                 if (s5 !== peg$FAILED) {
                   peg$reportedPos = s0;
                   s1 = peg$c41(s1, s5);
@@ -865,7 +870,7 @@ window.flowchart = (function() {
         }
         if (s0 === peg$FAILED) {
           s0 = peg$currPos;
-          s1 = peg$parseadditive();
+          s1 = peg$parseexpression();
           if (s1 !== peg$FAILED) {
             s2 = peg$parses();
             if (s2 !== peg$FAILED) {
@@ -879,7 +884,7 @@ window.flowchart = (function() {
               if (s3 !== peg$FAILED) {
                 s4 = peg$parses();
                 if (s4 !== peg$FAILED) {
-                  s5 = peg$parseadditive();
+                  s5 = peg$parseexpression();
                   if (s5 !== peg$FAILED) {
                     peg$reportedPos = s0;
                     s1 = peg$c44(s1, s5);
@@ -905,6 +910,17 @@ window.flowchart = (function() {
             s0 = peg$c1;
           }
         }
+      }
+
+      return s0;
+    }
+
+    function peg$parseexpression() {
+      var s0;
+
+      s0 = peg$parseadditive();
+      if (s0 === peg$FAILED) {
+        s0 = peg$parsestring();
       }
 
       return s0;
@@ -1138,27 +1154,85 @@ window.flowchart = (function() {
       return s0;
     }
 
+    function peg$parsestring() {
+      var s0, s1, s2, s3;
+
+      s0 = peg$currPos;
+      if (input.charCodeAt(peg$currPos) === 34) {
+        s1 = peg$c61;
+        peg$currPos++;
+      } else {
+        s1 = peg$FAILED;
+        if (peg$silentFails === 0) { peg$fail(peg$c62); }
+      }
+      if (s1 !== peg$FAILED) {
+        s2 = [];
+        if (peg$c63.test(input.charAt(peg$currPos))) {
+          s3 = input.charAt(peg$currPos);
+          peg$currPos++;
+        } else {
+          s3 = peg$FAILED;
+          if (peg$silentFails === 0) { peg$fail(peg$c64); }
+        }
+        while (s3 !== peg$FAILED) {
+          s2.push(s3);
+          if (peg$c63.test(input.charAt(peg$currPos))) {
+            s3 = input.charAt(peg$currPos);
+            peg$currPos++;
+          } else {
+            s3 = peg$FAILED;
+            if (peg$silentFails === 0) { peg$fail(peg$c64); }
+          }
+        }
+        if (s2 !== peg$FAILED) {
+          if (input.charCodeAt(peg$currPos) === 34) {
+            s3 = peg$c61;
+            peg$currPos++;
+          } else {
+            s3 = peg$FAILED;
+            if (peg$silentFails === 0) { peg$fail(peg$c62); }
+          }
+          if (s3 !== peg$FAILED) {
+            peg$reportedPos = s0;
+            s1 = peg$c65(s2);
+            s0 = s1;
+          } else {
+            peg$currPos = s0;
+            s0 = peg$c1;
+          }
+        } else {
+          peg$currPos = s0;
+          s0 = peg$c1;
+        }
+      } else {
+        peg$currPos = s0;
+        s0 = peg$c1;
+      }
+
+      return s0;
+    }
+
     function peg$parseidentifier() {
       var s0, s1, s2;
 
       s0 = peg$currPos;
       s1 = [];
-      if (peg$c61.test(input.charAt(peg$currPos))) {
+      if (peg$c66.test(input.charAt(peg$currPos))) {
         s2 = input.charAt(peg$currPos);
         peg$currPos++;
       } else {
         s2 = peg$FAILED;
-        if (peg$silentFails === 0) { peg$fail(peg$c62); }
+        if (peg$silentFails === 0) { peg$fail(peg$c67); }
       }
       if (s2 !== peg$FAILED) {
         while (s2 !== peg$FAILED) {
           s1.push(s2);
-          if (peg$c61.test(input.charAt(peg$currPos))) {
+          if (peg$c66.test(input.charAt(peg$currPos))) {
             s2 = input.charAt(peg$currPos);
             peg$currPos++;
           } else {
             s2 = peg$FAILED;
-            if (peg$silentFails === 0) { peg$fail(peg$c62); }
+            if (peg$silentFails === 0) { peg$fail(peg$c67); }
           }
         }
       } else {
@@ -1166,7 +1240,7 @@ window.flowchart = (function() {
       }
       if (s1 !== peg$FAILED) {
         peg$reportedPos = s0;
-        s1 = peg$c63(s1);
+        s1 = peg$c68(s1);
       }
       s0 = s1;
 
@@ -1176,7 +1250,7 @@ window.flowchart = (function() {
 
       var labels = {};
       var vars = {};
-      var vars_list = [];
+      var varsList = [];
 
 
     peg$result = peg$startRuleFunction();

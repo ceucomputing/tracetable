@@ -3,7 +3,7 @@ INPUT A
 INPUT B
 JUMPIF A < 1? error
 JUMPIF B < 1? error -> else
-error: OUTPUT A -> end
+error: OUTPUT "Error" -> end
 else: JUMPIF A = B? output
 JUMPIF A > B? then
 ASSIGN B = B - A -> else
