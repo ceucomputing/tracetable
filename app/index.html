@@ -39,15 +39,15 @@
       </nav>
 
       <!-- Nav tabs -->
-      <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#brickTab" aria-controls="brickTab" role="tab" data-toggle="tab">Simple</a></li>
-        <li role="presentation"><a href="#concreteTab" aria-controls="concreteTab" role="tab" data-toggle="tab">Factorial</a></li>
-        <li role="presentation"><a href="#waterTab" aria-controls="waterTab" role="tab" data-toggle="tab">GCD</a></li>
-      </ul>
+      <p><ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a id="simple-tab" href="#" role="tab" data-toggle="tab">Simple</a></li>
+        <li role="presentation"><a id="factorial-tab" href="#" role="tab" data-toggle="tab">Factorial</a></li>
+        <li role="presentation"><a id="gcd-tab" href="#" role="tab" data-toggle="tab">GCD</a></li>
+      </ul></p>
 
       <div class="row">
 
-        <div class="col-lg-5 col-md-6">
+        <div class="col-lg-6 col-md-7 col-sm-8">
           <div id="mermaid-holder">
             <div class="mermaid">
 
@@ -55,29 +55,47 @@
           </div>
         </div>
 
-        <div class="col-lg-7 col-md-6">
-          <h2>Simulation Controls</h2>
+        <div class="col-lg-6 col-md-5 col-sm-4">
 
-          <button id="next" type="button" class="btn btn-default btn-lg">
-            <span class="glyphicon glyphicon-forward" aria-hidden="true"></span> Next Step
-          </button>
+          <p><div class="panel panel-primary">
+            <div class="panel-heading">
+              <h3 class="panel-title">Simulation Controls</h3>
+            </div>
+            <div class="panel-body">
+              <button id="next" type="button" class="btn btn-default">
+                <span class="glyphicon glyphicon-forward" aria-hidden="true"></span> Next
+              </button>
 
-          <button id="reset" type="button" class="btn btn-danger btn-lg">
-            <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span> Reset
-          </button>
+              <button id="reset" type="button" class="btn btn-danger">
+                <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span> Reset
+              </button>
+            </div>
+          </div></p>
+          <p><div class="panel panel-primary">
+            <div class="panel-heading">
+              <h3 class="panel-title">Trace Table</h3>
+            </div>
+            <div class="panel-body">
+              <p><table id="tracetable" class="table table-bordered text-center">
+                <thead>
+                  <tr>
 
-          <h2>Trace Table</h2>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td colspan="9">No items to display</td></tr>
+                </tbody>
+              </table></p>
+            </div>
+          </div></p>
 
-          <p><table id="tracetable" class="table table-bordered text-center">
-            <thead>
-              <tr>
+          <h2></h2>
 
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td colspan="9">No results recorded yet.</td></tr>
-            </tbody>
-          </table></p>
+
+
+          <h2></h2>
+
+
         </div>
 
       </div>

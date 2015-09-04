@@ -2,6 +2,10 @@
 
 $(function() {
 
+  var flowchart = null;
+  var current = 0;
+  var next = null;
+
   var tracetableScope = {};
   var tracetableItems = [];
 
@@ -80,7 +84,7 @@ $(function() {
   }
 
   // Executes the command at index current and updates the trace table if needed.
-  // Returns the index of the next command or null if the flowchart simulation should end.
+  // Returns by calling callback with index of the new current command and next command.
   // The value of current must not be null.
   function execute(flowchart, current, callback) {
     var labels = flowchart["labels"];
@@ -155,54 +159,74 @@ $(function() {
     }
   }
 
-  $.get("../images/gcd.flowchart", function(data) {
-    var flowchart = window.flowchart.parse(data);
-    var varsList = flowchart["varsList"];
-    var current = 0;
-    var next = null;
-
-    function resetTracetable() {
-      var html = "<tr>";
-      for (var i = 0; i < varsList.length; i++) {
-        html += "<th>" + varsList[i] + "</th>";
-      }
-      html += "<th>Output</th></tr>";
-      $('#tracetable > thead').html(html);
-      tracetableItems = [];
+  function resetTracetable() {
+    var varsList = [];
+    if (flowchart) varsList = flowchart["varsList"];
+    var html = "<tr>";
+    for (var i = 0; i < varsList.length; i++) {
+      html += "<th>" + varsList[i] + "</th>";
     }
+    html += "<th>Output</th></tr>";
+    $('#tracetable > thead').html(html);
+    tracetableItems = [];
+  }
 
-    function reset() {
-      resetTracetable();
-      current = 0;
-      execute(flowchart, current, function(newCurrent, newNext) {
-        current = newCurrent;
-        next = newNext;
-        render(flowchart, current);
-        $("#next").prop("disabled", next == null);
-      });
-    }
-
-    $("#next").on("click", function() {
-      if (next != null) {
-        $("#next").prop("disabled", true);
-        $("#reset").prop("disabled", true);
-        // Render both before and after execution.
-        render(flowchart, next);
-        execute(flowchart, next, function(newCurrent, newNext) {
-          current = newCurrent;
-          next = newNext;
-          // Render both before and after execution.
-          render(flowchart, current);
-          $("#next").prop("disabled", next == null);
-          $("#reset").prop("disabled", false);
-        });
-      }
+  function reset() {
+    resetTracetable();
+    current = 0;
+    execute(flowchart, current, function(newCurrent, newNext) {
+      current = newCurrent;
+      next = newNext;
+      render(flowchart, current);
+      $("#next").prop("disabled", next == null);
     });
+  }
 
-    $("#reset").on("click", function() {
+  $.get("../images/simple.flowchart", function(data) {
+    flowchart = window.flowchart.parse(data);
+    reset();
+  });
+
+  $("#simple-tab").on("click", function() {
+    $.get("../images/simple.flowchart", function(data) {
+      flowchart = window.flowchart.parse(data);
       reset();
     });
+  });
 
+  $("#factorial-tab").on("click", function() {
+    $.get("../images/factorial.flowchart", function(data) {
+      flowchart = window.flowchart.parse(data);
+      reset();
+    });
+  });
+
+  $("#gcd-tab").on("click", function() {
+    $.get("../images/gcd.flowchart", function(data) {
+      flowchart = window.flowchart.parse(data);
+      reset();
+    });
+  });
+
+  $("#next").on("click", function() {
+    if (next != null) {
+      $("#next").prop("disabled", true);
+      $("#reset").prop("disabled", true);
+      // Render both before and after execution.
+      render(flowchart, next);
+      execute(flowchart, next, function(newCurrent, newNext) {
+        current = newCurrent;
+        next = newNext;
+        // Render both before and after execution.
+        render(flowchart, current);
+        $("#next").prop("disabled", next == null);
+        $("#reset").prop("disabled", false);
+        if (next == null) bootbox.alert("Flowchart has ended. Select another flowchart or Reset to run again.");
+      });
+    }
+  });
+
+  $("#reset").on("click", function() {
     reset();
   });
 

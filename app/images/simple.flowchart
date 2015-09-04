@@ -1,0 +1,6 @@
+START
+INPUT A
+JUMPIF A > 0? positive
+OUTPUT "A is not positive" -> end
+positive: OUTPUT "A is positive"
+end: END

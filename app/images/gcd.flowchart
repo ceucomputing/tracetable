@@ -1,7 +1,7 @@
 START
 INPUT A
-INPUT B
 JUMPIF A < 1? error
+INPUT B
 JUMPIF B < 1? error -> else
 error: OUTPUT "Error" -> end
 else: JUMPIF A = B? output
