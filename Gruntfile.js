@@ -344,7 +344,7 @@ module.exports = function (grunt) {
           dest: '<%= config.dist %>',
           src: [
             '*.{ico,png,txt}',
-            'images/{,*/}*.webp',
+            'images/{,*/}*.{webp,flowchart}',
             '{,*/}*.html',
             'styles/fonts/{,*/}*.*'
           ]
@@ -377,9 +377,9 @@ module.exports = function (grunt) {
 
     peg: {
       dist: {
-        src: "<%= config.app %>/images/flowchart.peg",
-        dest: "<%= config.app %>/scripts/flowchart.js",
-        options: { exportVar: "window.flowchart" }
+        src: '<%= config.app %>/scripts/flowchart.peg',
+        dest: '<%= config.app %>/scripts/vendor/flowchart.js',
+        options: { exportVar: 'window.flowchart' }
       }
     },
 
@@ -440,7 +440,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
-    'peg',
+    'newer:peg',
     'wiredep',
     'useminPrepare',
     'concurrent:dist',
