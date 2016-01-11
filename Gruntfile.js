@@ -377,9 +377,9 @@ module.exports = function (grunt) {
 
     peg: {
       dist: {
-        src: '<%= config.app %>/scripts/flowchart.peg',
-        dest: '<%= config.app %>/scripts/vendor/flowchart.js',
-        options: { exportVar: 'window.flowchart' }
+        src: '<%= config.app %>/scripts/parser.peg',
+        dest: '<%= config.app %>/scripts/vendor/parser.js',
+        options: { exportVar: 'window.parser' }
       }
     },
 

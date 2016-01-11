@@ -1,12 +1,12 @@
 START
 INPUT A
-JUMPIF A < 1? error
-INPUT B
-JUMPIF B < 1? error -> else
+JUMPIF A < 1? error -> continue
 error: OUTPUT "Error" -> end
-else: JUMPIF A = B? output
+continue: INPUT B
+JUMPIF B < 1? error
+loop: JUMPIF A = B? output
 JUMPIF A > B? then
-ASSIGN B = B - A -> else
-then: ASSIGN A = A - B -> else
+ASSIGN B = B - A -> loop
+then: ASSIGN A = A - B -> loop
 output: OUTPUT A
 end: END

@@ -11,12 +11,9 @@ $icon-font-path: "../bower_components/bootstrap-sass/assets/fonts/bootstrap/";
   padding: 0.2em 0;
 }
 
-.mermaid .label {
-  font-size: 12px;
-}
-
-.mermaid {
+#diagram {
   text-align: center;
+  margin-bottom: 1em;
   width: auto;
 }
 

@@ -12,7 +12,9 @@ grunt
 
 ## Usage
 
-`grunt serve:dist`
+```
+grunt serve:dist
+```
 
 ## Credits
 

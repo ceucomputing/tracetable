@@ -42,16 +42,15 @@
       <p><ul class="nav nav-tabs" role="tablist">
         <li role="presentation" class="active"><a id="simple-tab" href="#" role="tab" data-toggle="tab" data-src="images/simple.flowchart">Simple</a></li>
         <li role="presentation"><a id="factorial-tab" href="#" role="tab" data-toggle="tab" data-src="images/factorial.flowchart">Factorial</a></li>
-        <li role="presentation"><a id="gcd-tab" href="#" role="tab" data-toggle="tab" data-src="images/gcd.flowchart">GCD</a></li>
+        <!--<li role="presentation"><a id="gcd-tab" href="#" role="tab" data-toggle="tab" data-src="images/gcd.flowchart">GCD</a></li>-->
+        <li role="presentation"><a id="sum-tab" href="#" role="tab" data-toggle="tab" data-src="images/sum.flowchart">Sum</a></li>
       </ul></p>
 
       <div class="row">
 
         <div class="col-lg-6 col-md-7 col-sm-8">
-          <div id="mermaid-holder">
-            <div class="mermaid">
+          <div id="diagram">
 
-            </div>
           </div>
         </div>
 
@@ -103,8 +102,8 @@
     <!-- bower:js -->
     <script src="/bower_components/modernizr/modernizr.js"></script>
     <script src="/bower_components/jquery/dist/jquery.js"></script>
-    <script src="/bower_components/d3/d3.js"></script>
-    <script src="/bower_components/mermaid/dist/mermaid.slim.js"></script>
+    <script src="/bower_components/raphael/raphael.js"></script>
+    <script src="/bower_components/flowchart/release/flowchart.min.js"></script>
     <script src="/bower_components/bootbox/bootbox.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
@@ -126,7 +125,7 @@
 
     <!-- build:js scripts/main.js -->
     <script src="scripts/vendor/polyfills.js"></script>
-    <script src="scripts/vendor/flowchart.js"></script>
+    <script src="scripts/vendor/parser.js"></script>
     <script src="scripts/main.js"></script>
     <!-- endbuild -->
 

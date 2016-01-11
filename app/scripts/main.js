@@ -1,5 +1,5 @@
 // jshint devel:true
-/*global $:false, mermaid:false, bootbox:false*/
+/*global $:false, bootbox:false*/
 
 $(function() {
   'use strict';
@@ -18,10 +18,11 @@ $(function() {
     var commands = flowchart.commands;
 
     function renderFlowchart(markup) {
-      var holder = $('#mermaid-holder');
-      holder.empty();
-      $('<div>').addClass('mermaid').text(markup).appendTo(holder);
-      mermaid.init();
+      var diagram = window.flowchart.parse(markup);
+      $('#diagram').empty();
+      diagram.drawSVG('diagram', {
+        'flowstate': { 'current': { 'fill': 'yellow', 'font-color': 'red', 'font-weight': 'bold' } }
+      });
     }
 
     function renderTracetable() {
@@ -40,46 +41,54 @@ $(function() {
       $('#tracetable > tbody').html(html);
     }
 
-    var markup = 'graph TD;\n';
+    var markup = '';
+    var i, command;
 
-    for (var i = 0; i < commands.length; i++) {
-      var left = '[';
-      var right = ']';
-      var command = commands[i];
+    for (i = 0; i < commands.length; i++) {
+      command = commands[i];
 
+      var nodetype = 'operation';
       switch (command.command) {
         case 'JUMPIF':
-          left = '{'; right = '}'; break;
+          nodetype = 'condition'; break;
         case 'START':
+          nodetype = 'start'; break;
         case 'END':
-          left = '('; right = ')'; break;
+          nodetype = 'end'; break;
         case 'INPUT':
         case 'OUTPUT':
-          left = '>'; right = ']'; break;
+          nodetype = 'inputoutput'; break;
+      }
+
+      var flowstate = '';
+      if (current != null && i === current) {
+        flowstate = '|current';
       }
 
       // Create nodes
-      markup += 'node_' + i + left + command.title + right + ';\n';
+      markup += 'node_' + i + '=>' + nodetype + ': ' + command.title + flowstate + '\n';
+    }
+
+    markup += '\n';
+
+    for (i = 0; i < commands.length; i++) {
+      command = commands[i];
 
       // Create connections between nodes
       var chain = (i < commands.length - 1) ? (i + 1) : null;
       if (command.chain) {
         chain = labels[command.chain];
       }
-      var chainArrow = '-->';
+      var chainArrow = '->';
       if (chain) {
         if (command.command === 'JUMPIF') {
-          chainArrow = '-->|N|';
+          chainArrow = '(no)->';
         }
         markup += 'node_' + i + chainArrow + 'node_' + chain + '\n';
       }
       if (command.command === 'JUMPIF' && command.then) {
-        markup += 'node_' + i + '-->|Y|' + 'node_' + labels[command.then] + '\n';
+        markup += 'node_' + i + '(yes,right)->' + 'node_' + labels[command.then] + '\n';
       }
-    }
-
-    if (current != null) {
-      markup += 'style node_' + current + ' fill:#f9f,stroke:#333,stroke-width:4px\n';
     }
 
     renderFlowchart(markup);
@@ -191,7 +200,7 @@ $(function() {
 
   $('.nav-tabs a').on('click', function(e) {
     $.get($(e.target).data('src'), function(data) {
-      globalFlowchart = window.flowchart.parse(data);
+      globalFlowchart = window.parser.parse(data);
       reset();
     });
   });
