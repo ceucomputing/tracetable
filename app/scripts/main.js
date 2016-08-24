@@ -21,7 +21,8 @@ $(function() {
       var diagram = window.flowchart.parse(markup);
       $('#diagram').empty();
       diagram.drawSVG('diagram', {
-        'flowstate': { 'current': { 'fill': 'yellow', 'font-color': 'red', 'font-weight': 'bold' } }
+        'line-length': 30,
+        'flowstate': { 'current': { 'fill': 'yellow', 'font-color': 'red' } }
       });
     }
 
@@ -76,10 +77,17 @@ $(function() {
 
       // Create connections between nodes
       var chain = (i < commands.length - 1) ? (i + 1) : null;
+      var chainArrow = '->';
       if (command.chain) {
         chain = labels[command.chain];
+        // FIXME: Hard-coded hack to make built-in flowcharts look pretty
+        if (command.chain.endsWith('_loop') || command.chain.endsWith('_right')) {
+          chainArrow = '(right)->';
+        }
+        if (command.chain.endsWith('_bottom')) {
+          chainArrow = '(bottom)->';
+        }
       }
-      var chainArrow = '->';
       if (chain) {
         if (command.command === 'JUMPIF') {
           chainArrow = '(no)->';
@@ -87,7 +95,7 @@ $(function() {
         markup += 'node_' + i + chainArrow + 'node_' + chain + '\n';
       }
       if (command.command === 'JUMPIF' && command.then) {
-        markup += 'node_' + i + '(yes,right)->' + 'node_' + labels[command.then] + '\n';
+        markup += 'node_' + i + '(yes)->' + 'node_' + labels[command.then] + '\n';
       }
     }
 
@@ -182,7 +190,7 @@ $(function() {
     for (var i = 0; i < varsList.length; i++) {
       html += '<th>' + varsList[i] + '</th>';
     }
-    html += '<th>Output</th></tr>';
+    html += '<th>OUTPUT</th></tr>';
     $('#tracetable > thead').html(html);
     tracetableItems = [];
   }
