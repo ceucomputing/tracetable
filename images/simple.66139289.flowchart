@@ -1,0 +1,7 @@
+START
+INPUT x
+INPUT y
+JUMPIF x > y? greater
+OUTPUT "x is not greater than y" -> end
+greater: OUTPUT "x is greater than y"
+end: END
