@@ -1,6 +1,6 @@
 START
-ASSIGN y = 1
 INPUT x
+ASSIGN y = 1
 JUMPIF x < 0? error -> loop
 loop: JUMPIF x = 0? output
 ASSIGN y = y * x
