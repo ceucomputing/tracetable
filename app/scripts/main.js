@@ -21,7 +21,7 @@ $(function() {
       var diagram = window.flowchart.parse(markup);
       $('#diagram').empty();
       diagram.drawSVG('diagram', {
-        'line-length': 30,
+        'line-length': 25,
         'flowstate': { 'current': { 'fill': 'yellow', 'font-color': 'red' } }
       });
     }
@@ -206,14 +206,14 @@ $(function() {
     });
   }
 
-  $('.nav-tabs a').on('click', function(e) {
+  $('.nav a').on('click', function(e) {
     $.get($(e.target).data('src'), function(data) {
       globalFlowchart = window.parser.parse(data);
       reset();
     });
   });
 
-  $('.nav-tabs a:first').click();
+  $('.nav a:first').click();
 
   $('#next').on('click', function() {
     if (globalNext != null) {
