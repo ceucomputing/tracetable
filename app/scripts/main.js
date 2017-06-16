@@ -206,14 +206,28 @@ $(function() {
     });
   }
 
-  $('.nav a').on('click', function(e) {
-    $.get($(e.target).data('src'), function(data) {
-      globalFlowchart = window.parser.parse(data);
-      reset();
-    });
-  });
+  if (window.location.search === '') {
 
-  $('.nav a:first').click();
+    // If no query string, start up as normal.
+    $('.nav a').on('click', function(e) {
+      $.get($(e.target).data('src'), function(data) {
+        console.log(data);
+        globalFlowchart = window.parser.parse(data);
+        reset();
+      });
+    });
+
+    $('.nav a:first').click();
+
+  } else {
+
+    // Otherwise, hide navigation and get flowchart from query string.
+    $('.nav').hide();
+    var data = deparam(window.location.search.slice(1)).f.replace(/\r\n/g, '\n');
+    globalFlowchart = window.parser.parse(data);
+    reset();
+
+  }
 
   $('#next').on('click', function() {
     if (globalNext != null) {
