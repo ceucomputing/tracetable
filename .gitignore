@@ -2,5 +2,6 @@ node_modules
 dist
 .tmp
 bower_components
+!docs/bower_components
 *.sublime-*
 .DS_Store
