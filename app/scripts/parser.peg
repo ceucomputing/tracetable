@@ -34,6 +34,9 @@ condition
   = l:expression s "=" s r:expression { return { "title": l["title"] + " = " + r["title"], "code": "(" + l["code"] + ")==(" + r["code"] + ")" }; }
   / l:expression s "<" s r:expression { return { "title": l["title"] + " < " + r["title"], "code": "(" + l["code"] + ")<(" + r["code"] + ")" }; }
   / l:expression s ">" s r:expression { return { "title": l["title"] + " > " + r["title"], "code": "(" + l["code"] + ")>(" + r["code"] + ")" }; }
+  / l:expression s "!=" s r:expression { return { "title": l["title"] + " != " + r["title"], "code": "(" + l["code"] + ")!=(" + r["code"] + ")" }; }
+  / l:expression s "<=" s r:expression { return { "title": l["title"] + " <= " + r["title"], "code": "(" + l["code"] + ")<=(" + r["code"] + ")" }; }
+  / l:expression s ">=" s r:expression { return { "title": l["title"] + " >= " + r["title"], "code": "(" + l["code"] + ")>=(" + r["code"] + ")" }; }
 
 expression
   = additive
