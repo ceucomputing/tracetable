@@ -1,0 +1,13 @@
+START
+INPUT n
+JUMPIF n > 0? continue -> error
+error: OUTPUT "Error" -> end
+continue: ASSIGN sum = 0
+ASSIGN count = 0
+loop: JUMPIF count = n? calculate -> begin
+begin: INPUT x
+ASSIGN sum = sum + x
+ASSIGN count = count + 1 -> loop
+calculate: ASSIGN result = sum / n
+OUTPUT result
+end: END
