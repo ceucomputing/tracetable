@@ -211,7 +211,6 @@ $(function() {
     // If no query string, start up as normal.
     $('.nav a').on('click', function(e) {
       $.get($(e.target).data('src'), function(data) {
-        console.log(data);
         globalFlowchart = window.parser.parse(data);
         reset();
       });
